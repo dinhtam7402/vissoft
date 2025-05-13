@@ -1,0 +1,45 @@
+@startuml
+actor Người_phỏng_vấn as NPV
+boundary Giao_diện_màn_phỏng_vấn as GD
+participant Backend as BE
+database Database as DB
+
+
+
+'entity Employee
+'entity School
+entity Candidate_CV as CV
+entity ReviewCV
+entity Feedback
+'entity Feedback_Total
+'entity Param
+'entity Calendar
+'entity Calendar_Employee
+'entity Pre_employees
+'entity Employee_Contract
+'entity Relative
+'entity JD
+'entity recruitment_need
+'entity Histories_Status
+'entity recruitment_stakeholder
+'entity Department
+
+== thêm feedback phỏng vấn ==
+NPV -> GD: điền thông tin phỏng vấn và ấn nút gửi
+GD -> BE: gửi yêu cầu phỏng vấn
+BE -> DB: lưu thông tin vào DB
+DB -> Feedback: Lưu thông tin
+DB <-- Feedback: Trả thông báo thành công
+BE <-- DB: Trả thông báo thành công
+GD<--BE: Trả thông báo thành công và hiển thị
+
+== Quyết định tuyển dụng ==
+NPV -> GD: điền thông tin phỏng vấn và ấn nút gửi
+GD -> BE: gửi yêu cầu phỏng vấn
+BE -> DB: lưu thông tin vào DB
+DB -> Feedback_Total: Lưu thông tin
+DB <-- Feedback_Total: Trả thông báo thành công
+BE <-- DB: Trả thông báo thành công
+GD<--BE: Trả thông báo thành công và hiển thị
+
+@enduml

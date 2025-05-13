@@ -1,0 +1,60 @@
+@startuml
+actor Người_phỏng_vấn as NPV
+boundary Giao_diện_màn_phỏng_vấn as GD
+participant Backend as BE
+database Database as DB
+
+
+
+'entity Employee
+'entity School
+entity Candidate_CV as CV
+entity ReviewCV
+entity Feedback
+'entity Feedback_Total
+'entity Param
+'entity Calendar
+'entity Calendar_Employee
+'entity Pre_employees
+'entity Employee_Contract
+'entity Relative
+'entity JD
+'entity recruitment_need
+'entity Histories_Status
+'entity recruitment_stakeholder
+'entity Department
+
+== lấy dữ liệu chi tiết ==
+NPV -> GD: Truy cập giao diện màn phỏng vấn
+GD -> BE: gửi yêu cầu lấy dữ liệu
+BE -> BE: kiểm tra vai trò người dùng
+BE -> DB: truy suất vào database để lấy dữ liệu ứng viên
+'Lấy CV của ứng viên
+BE -> DB: truy suất vào database để lấy dữ liệu ứng viên
+DB -> CV: lấy thông tin ứng viên
+'Chỗ này có HOD không nhỉ
+alt "HR, BOD"
+    'Lấy review về ứng viên
+    CV -> ReviewCV: Join để lấy thông tin review
+    CV <-- ReviewCV: Trả thông tin review
+    'Lấy review về ứng viên
+    CV -> Feedback: Join để lấy thông tin feedback
+    CV <-- Feedback: Trả thông tin feedback
+    'Lấy review về ứng viên
+    CV -> Feedback_Total: Join để lấy thông tin Feedback_Total
+    CV <-- Feedback_Total: Trả thông tin Feedback_Total
+
+else "Người phỏng vấn"
+    'Lấy review về ứng viên
+    CV -> ReviewCV: Join để lấy thông tin review
+    CV <-- ReviewCV: Trả thông tin review
+    'Lấy review về ứng viên
+    CV -> Feedback: Join để lấy thông tin feedback
+    CV <-- Feedback: Trả thông tin feedback(chỉ lấy các feedback của họ)
+else "Ngưởi review":
+    CV -> CV: không truy vấn
+end
+CV -->DB: trả dữ liệu
+BE <-- DB: trả dữ liệu dứng viên
+GD<--BE: trả dữ liệu về front cho FE hiển thị giao diện
+@enduml
