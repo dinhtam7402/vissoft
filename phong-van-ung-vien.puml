@@ -1,45 +1,82 @@
 @startuml
-actor Người_phỏng_vấn as NPV
-boundary Giao_diện_màn_phỏng_vấn as GD
-participant Backend as BE
-database Database as DB
+' Định dạng
+skinparam backgroundColor white
+skinparam handwritten false
+skinparam defaultFontName Arial
+skinparam sequenceMessageAlign center
+skinparam padding 5
 
+' Định dạng màu cho đường
+skinparam sequence {
+  ArrowColor #0066CC
+  LifeLineBorderColor #33CC33
+  LifeLineBackgroundColor #FFFFFF
+  BoxBorderColor #DDDDDD
+  BoxBackgroundColor #EEEEEE
+  DividerBorderColor #666666
+  DividerBackgroundColor #EEEEEE
+}
 
+' Actors
+actor "Người_phỏng_vấn" as NPV #lightblue
 
-'entity Employee
-'entity School
-entity Candidate_CV as CV
-entity ReviewCV
-entity Feedback
-'entity Feedback_Total
-'entity Param
-'entity Calendar
-'entity Calendar_Employee
-'entity Pre_employees
-'entity Employee_Contract
-'entity Relative
-'entity JD
-'entity recruitment_need
-'entity Histories_Status
-'entity recruitment_stakeholder
-'entity Department
+' Layers
+boundary "Giao_diện_màn_phỏng_vấn" as GD #palegreen
+participant "Backend" as BE #lightyellow
+database "Database" as DB #lightgray
 
-== thêm feedback phỏng vấn ==
-NPV -> GD: điền thông tin phỏng vấn và ấn nút gửi
-GD -> BE: gửi yêu cầu phỏng vấn
-BE -> DB: lưu thông tin vào DB
-DB -> Feedback: Lưu thông tin
-DB <-- Feedback: Trả thông báo thành công
-BE <-- DB: Trả thông báo thành công
-GD<--BE: Trả thông báo thành công và hiển thị
+' Entities
+entity Employee #pink
+entity School #pink
+entity Candidate_CV as CV #pink
+entity ReviewCV #pink
+entity Feedback #pink
+entity Feedback_Total #pink
+entity Param #pink
+entity Calendar #pink
+entity Calendar_Employee #pink
+entity Pre_employees #pink
+entity Employee_Contract #pink
+entity Relative #pink
+entity JD #pink
+entity recruitment_need #pink
+entity Histories_Status #pink
+entity recruitment_stakeholder #pink
+entity Department #pink
 
+' Sequence flows
+== Thêm feedback phỏng vấn ==
+NPV -[#blue]> GD: Điền thông tin phỏng vấn và ấn nút gửi
+GD -[#green]> BE: Gửi yêu cầu phỏng vấn
+BE -[#orange]> DB: Lưu thông tin vào DB
+alt Người chốt phỏng vấn:
+    alt Yêu cầu phỏng vấn đợt sau:
+        DB -> CV: Chuyển trạng thái từ Phỏng vấn sang Đặt lịch
+    else không yêu cầu phỏng vấn vòng sau
+        DB -> CV: Chuyển trạng thái từ Phỏng vấn sang Quyết định tuyển dụng
+    end
+end
+DB <-- CV: Trả kết quả
+DB -[#red]> Feedback: Lưu thông tin
+DB <[#red]-- Feedback: Trả thông báo thành công
+BE <[#orange]-- DB: Trả thông báo thành công
+GD <[#green]-- BE: Trả thông báo thành công và hiển thị
 == Quyết định tuyển dụng ==
-NPV -> GD: điền thông tin phỏng vấn và ấn nút gửi
-GD -> BE: gửi yêu cầu phỏng vấn
-BE -> DB: lưu thông tin vào DB
-DB -> Feedback_Total: Lưu thông tin
-DB <-- Feedback_Total: Trả thông báo thành công
-BE <-- DB: Trả thông báo thành công
-GD<--BE: Trả thông báo thành công và hiển thị
+NPV -[#blue]> GD: Điền thông tin phỏng vấn và ấn nút gửi
+GD -[#green]> BE: Gửi yêu cầu phỏng vấn
+BE -[#orange]> DB: Lưu thông tin vào DB
+alt "Tuyển dụng"
+    DB -> CV: Chuyển trạng thái sang Gửi thư mời làm việc
+else không tuyển dụng
+    DB -> CV: Trạng thái không phù hợp
+end
+DB <-- CV: trả kết quả
+DB -[#purple]> Feedback_Total: Lưu thông tin
+DB <[#purple]-- Feedback_Total: Trả thông báo thành công
+BE <[#orange]-- DB: Trả thông báo thành công
+BE -> BE: Gửi thông báo tới HR
+GD <[#green]-- BE: Trả thông báo thành công và hiển thị
+
+footer "Hệ thống Phỏng vấn Ứng viên"
 
 @enduml

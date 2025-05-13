@@ -32,8 +32,7 @@ BE -> DB: truy suất vào database để lấy dữ liệu ứng viên
 'Lấy CV của ứng viên
 BE -> DB: truy suất vào database để lấy dữ liệu ứng viên
 DB -> CV: lấy thông tin ứng viên
-'Chỗ này có HOD không nhỉ
-alt "HR, BOD"
+alt "HR, BOD, HOB"
     'Lấy review về ứng viên
     CV -> ReviewCV: Join để lấy thông tin review
     CV <-- ReviewCV: Trả thông tin review
