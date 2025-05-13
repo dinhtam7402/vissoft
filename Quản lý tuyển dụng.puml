@@ -1,0 +1,84 @@
+@startuml
+actor "Người Dùng" as User
+
+boundary "Giao diện Quản lý Tuyển dụng" as FE
+
+participant "Vissoft - HR" as BE
+
+database "Recruitment Management" as DB_HR
+
+entity Candidate_CV
+entity ReviewCV
+entity Feedback
+entity Feedback_Total
+'entity Employee
+'entity School
+'entity Param
+'entity Calendar
+'entity Calendar_Employee
+'entity Pre_employees
+'entity Employee_Contract
+'entity Relative
+'entity JD
+'entity recruitment_need
+'entity Histories_Status
+'entity recruitment_stakeholder
+'entity Department
+
+== Truy cập vào trang Quản lý Tuyển Dụng ==
+User -> FE: Truy cập
+FE -> BE: Gửi yêu cầu lấy dữ liệu
+BE -> DB_HR: Lấy tổng bản ghi của các trạng thái và danh sách dữ liệu
+
+group Lấy dữ liệu
+    note right of DB_HR: Thực hiện song song 2 truy vấn
+
+    DB_HR -> Candidate_CV: Lấy số lượng CV theo trạng thái
+    DB_HR -> Candidate_CV: Lấy danh sách CV theo trạng thái, sắp xếp theo ngày tạo cũ nhất (và có khoảng thời gian cập nhật trong 14 ngày gần nhất)
+end
+
+alt role là HR, BOD
+    Candidate_CV --> DB_HR: Trả về số lượng CV (theo trạng thái - 15 cái) và danh sách CV
+
+else role là Người liên quan
+    Candidate_CV -> ReviewCV: Join theo review_employee_code
+    ReviewCV --> Candidate_CV: Trả số lượng và danh sách review
+
+    Candidate_CV -> Feedback: Join theo feedback_employee_code
+    Feedback --> Candidate_CV: Trả số lượng và danh sách phỏng vấn
+
+    Candidate_CV -> Feedback_Total: Join theo feedback_employee_code
+    Feedback_Total --> Candidate_CV: Trả số lượng và danh sách duyệt
+
+    Candidate_CV --> DB_HR: Trả dữ liệu được phân công
+end
+
+
+DB_HR --> BE: Trả dữ liệu
+BE --> FE: Trả dữ liệu cho FE hiển thị lên giao diện
+
+== Đánh giá sơ loại hồ sơ ứng viên ==
+User -> FE: Từ danh sách ứng viên có trạng thái "Chờ duyệt", chọn "Đánh giá hồ sơ"
+FE -> BE: Lấy thông tin chi tiết Hồ sơ ứng viên
+BE -> DB_HR: Lấy thống tin chi tiết
+DB_HR -> Candidate_CV: Lấy thông tin chi tiết
+
+Candidate_CV --> DB_HR: Trả về thông tin chi tiết Hồ sơ ứng viên
+DB_HR --> BE: Trả về thông tin chi tiết Hồ sơ ứng viên
+BE --> FE: Trả về dữ liệu cho FE hiển thị trên màn hình kèm form đánh giá hồ sơ
+
+User -> FE: Người đánh giá điền đánh giá vào form và ấn gửi
+FE -> BE: Gửi dữ liệu mà người dùng nhập vào form
+BE -> BE: Kiểm tra dữ liệu
+BE -> DB_HR: Lưu dữ liệu vào cơ sở dữ liệu
+
+group Lưu dữ liệu và cập nhật dữ liệu
+    note right of DB_HR: Thực hiện lưu, cập nhật vào cơ sở dữ liệu
+    DB_HR -> Candidate_CV: Cập nhật trạng thái hồ sơ ứng viên và thời gian chỉnh sửa
+    DB_HR -> ReviewCV: Lưu thông tin dữ liệu được nhập vào form
+end
+
+DB_HR --> BE: Trả về dữ liệu đã lưu và cập nhật
+BE --> FE: Trả về dữ liệu cho FE hiển thị lên giao diện
+
+@enduml
